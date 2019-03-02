@@ -1,0 +1,16 @@
+for $a in /planetas/planeta
+let $nombre := $a/nombre
+where $a/masa > 1
+return <nombre> {$nombre} </nombre>
+
+(: -------------------------------------- :)
+
+for $a in /planetas/planeta
+return <resultado>
+	<plan> {$a/nombre} </plan>
+	{
+		for $b in /planetas/planeta/satelites
+		return <nom> {$b/satelite/nombre} </nom>
+	}
+
+	</resultado>

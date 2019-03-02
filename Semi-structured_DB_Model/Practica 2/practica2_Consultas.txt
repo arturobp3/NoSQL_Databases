@@ -1,0 +1,252 @@
+﻿(: 1. Mostrar cada uno de los nombres de los bailes con la etiqueta 'bailes' :)
+
+
+
+doc("practica2.xml")/bailes/baile/nombre
+
+
+
+
+(: 2. Mostrar los nombres de los bailes seguidos con el número de plazas entre paréntesis, ambos dentro de la misma etiqueta 'bailes' :)
+
+
+
+doc("practica2.xml")/bailes/baile/nombre | /bailes/baile/plazas
+
+
+
+
+(: 3. Mostrar los nombres de los bailes cuyo precio sea mayor de 30. :)
+
+
+
+for $x in doc("practica2.xml")/bailes/baile
+
+where $x/precio > 30
+
+return $x/nombre
+
+
+
+
+(: 4. Mostrar los nombres de los bailes cuyo precio sea mayor de 30 y la moneda 'euro' :)
+
+
+
+for $x in doc("practica2.xml")/bailes/baile
+
+where $x/precio[@moneda="euro"] > 30
+
+return $x/nombre
+
+
+(: 5. Mostrar los nombres y la fecha de comienzo de los bailes que comiencen el mes de enero (utiliza para buscarlo la cadena de texto '/1/')  :)
+
+
+
+for $b in doc("practica2.xml")/bailes/baile
+
+where contains($b/comienzo, '/1/')
+
+return 
+<resultado>
+
+    {$b/nombre}
+
+    {$b/comienzo}
+
+</resultado>
+
+
+
+
+(: 6. Mostrar los nombres de los profesores y la sala en la que dan clase, ordenalos por sala. :)
+
+
+
+for $b in doc("practica2.xml")/bailes/baile
+
+order by $b/sala
+
+return 
+<resultado>
+
+    {$b/profesor}
+
+    {$b/sala}
+
+</resultado>
+
+
+
+(: 7. Mostrar los nombres de los profesores eliminando los repetidos y acompañar cada nombre con todas las salas en la que da clase, ordenalos por nombre. :)
+
+
+let $a := doc("practica2.xml")/bailes/baile
+
+for $b in distinct-values($a/profesor)
+order by $b
+
+return
+<resultado>
+
+	<Nombre>{$b}</Nombre>
+
+        {
+	
+		for $c in doc("practica2.xml")/bailes/baile
+		where $c/profesor=$b
+
+		return $c/sala
+        
+	}
+        
+        
+</resultado>
+        
+
+
+
+(: 8. Mostrar la media de los precios de todos los bailes :)
+
+
+
+avg(doc("practica2.xml")/bailes/baile/precio)
+
+
+
+
+(: 9.  Mostrar la suma de los precios de los bailes de la sala 1. :)
+
+
+sum(
+    
+	for $a in doc("practica2.xml")/bailes/baile
+
+	let $precio := $a/precio
+    
+	where $a/sala=1
+    
+	return $precio
+
+)
+
+
+(: 10. Mostrar cuantas plazas en total oferta el profesor ’Jesus Lozano’ :)
+
+
+sum(
+    
+	for $a in doc("practica2.xml")/bailes/baile
+    
+	let $plazas := $a/plazas
+    
+	where $a/profesor="Jesus Lozano"
+    
+	return $plazas
+
+)
+
+
+
+
+(: 11. Mostrar el dinero que ganaria la profesora ’Laura Mendiola’ si se completaran todas las plazas de su baile, sabiendo que solo tiene un baile. :)
+
+
+
+for $a in doc("practica2.xml")/bailes/baile
+
+let $plazas := $a/plazas
+
+let $precio := $a/precio
+
+where $a/profesor="Laura Mendiola"
+
+return $plazas*$precio
+
+
+
+
+(: 12. Mostrar el dinero que ganaria el profesor ’Jesus Lozano’ si se completaran todas las plazas de su baile, pero mostrando el beneficio de cada baile por separado  :)
+
+
+for $a in doc("practica2.xml")/bailes/baile
+
+let $plazas := $a/plazas
+
+let $precio := $a/precio
+
+where $a/profesor="Jesus Lozano"
+
+return 
+    
+<resultado> 
+        
+	<baile> {$a/nombre} </baile>
+        
+	<precio> {$plazas*$precio} </precio>
+    
+</resultado>
+
+
+
+
+(: 13. Mostrar el nombre del baile, su precio y el precio con un descuento del 15% para familias numerosas. Ordenar por el nombre del baile. :)
+
+
+
+for $a in doc("practica2.xml")/bailes/baile
+
+let $precio := $a/precio
+
+let $precioDesc := $precio*0.85
+
+order by $a/nombre
+
+return 
+    
+<resultado> 
+        
+	<baile> {$a/nombre} </baile>
+        
+	<precio> {$precio} </precio>
+        
+	<precio_descontado> {$precioDesc} </precio_descontado>
+    
+</resultado>
+
+
+(: 14. Mostrar todos los datos de cada baile excepto la fecha de comienzo y de fin. :)
+
+
+for $a in doc("practica2.xml")/bailes/baile
+
+return 
+<baile> {$a/* except $a/comienzo except $a/fin} </baile>
+
+
+
+
+(: 15. Mostrar en una tabla de HTML los nombres de los bailes y su profesor, cada uno en una fila :)
+
+
+
+<table>
+
+{
+  
+	for $baile in doc("practica2.xml")/bailes/baile
+	
+return 
+      
+	<tr>
+        
+		<td>{$baile/nombre}</td>
+        
+		<td>{$baile/profesor}</td>
+      
+	</tr>
+
+} 
+
+</table>
