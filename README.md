@@ -1,1 +1,0 @@
-# Semi-structured Database Model
